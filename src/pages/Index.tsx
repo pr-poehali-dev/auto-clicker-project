@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 
 const NAV_ITEMS = [
@@ -9,321 +9,58 @@ const NAV_ITEMS = [
 ];
 
 const ALL_FEATURES = [
-  {
-    icon: "Layers",
-    title: "Overlay поверх игры",
-    desc: "Плавающая кнопка всегда на экране. Открываешь любую игру — кликер уже работает сверху, как Discord overlay.",
-    tag: "OVERLAY",
-    color: "green",
-  },
-  {
-    icon: "Zap",
-    title: "Горячая кнопка",
-    desc: "Одна большая кнопка поверх всего — нажал и кликер запустился/остановился без открытия меню.",
-    tag: "БЫСТРО",
-    color: "cyan",
-  },
-  {
-    icon: "Timer",
-    title: "Настройка задержки",
-    desc: "От 1мс до 60 секунд между тапами. Слайдер + ручной ввод. Работает с любой частотой обновления экрана.",
-    tag: "ТОЧНОСТЬ",
-    color: "green",
-  },
-  {
-    icon: "Crosshair",
-    title: "Выбор точки тапа",
-    desc: "Тапни по экрану в режиме выбора — кликер запомнит координаты X/Y. Можно задать несколько точек.",
-    tag: "ПРИЦЕЛ",
-    color: "cyan",
-  },
-  {
-    icon: "BookMarked",
-    title: "Профили кликеров",
-    desc: "Сохраняй готовые конфиги — «Фарм золота», «Быстрый PvP», «Тихий режим». Переключай за 1 тап.",
-    tag: "ПРОФИЛИ",
-    color: "green",
-  },
-  {
-    icon: "Shuffle",
-    title: "Рандомизация",
-    desc: "Случайное отклонение позиции и задержки ±20%. Имитирует живые касания, обходит античит.",
-    tag: "АНТИБАН",
-    color: "cyan",
-  },
-  {
-    icon: "BarChart3",
-    title: "Счётчик в реальном времени",
-    desc: "CPS (тапов в секунду), общий счётчик тапов, время работы — всё на плавающей панели.",
-    tag: "СТАТЫ",
-    color: "green",
-  },
-  {
-    icon: "Clock",
-    title: "Таймер и авто-стоп",
-    desc: "Задай сколько тапов сделать или через сколько минут остановиться. Уснул — кликер сам выключится.",
-    tag: "АВТО",
-    color: "cyan",
-  },
-  {
-    icon: "Repeat",
-    title: "Мультиточечный режим",
-    desc: "До 10 точек по очереди или одновременно. Для игр где нужно тапать по нескольким кнопкам.",
-    tag: "МУЛЬТИ",
-    color: "green",
-  },
-  {
-    icon: "Move",
-    title: "Свайп-паттерны",
-    desc: "Записывай не просто тап, а движение пальца — свайп, перетаскивание, круговое движение.",
-    tag: "СВАЙП",
-    color: "cyan",
-  },
-  {
-    icon: "Moon",
-    title: "Работа в фоне",
-    desc: "Кликер продолжает работать когда телефон заблокирован (на Android без root при включённом Accessibility).",
-    tag: "ФОНОВЫЙ",
-    color: "green",
-  },
-  {
-    icon: "Palette",
-    title: "Тёмная тема overlay",
-    desc: "Настрой прозрачность и цвет панели — от почти невидимой до яркой. Не мешает видеть игру.",
-    tag: "UI",
-    color: "cyan",
-  },
+  { icon: "Layers", title: "Overlay поверх игры", desc: "Плавающая кнопка ⚡ всегда на экране — открываешь любую игру, кликер уже поверх. Перетаскивай куда угодно.", tag: "OVERLAY", color: "green" },
+  { icon: "Zap", title: "Горячая кнопка", desc: "Одна большая кнопка запускает и останавливает кликер без открытия меню. Тапни ⚡ — и поехали.", tag: "БЫСТРО", color: "cyan" },
+  { icon: "Timer", title: "Задержка 10мс–10с", desc: "Слайдер + точный ввод. Быстрый фарм или медленный режим — любая скорость.", tag: "ТОЧНОСТЬ", color: "green" },
+  { icon: "Crosshair", title: "До 10 точек тапа", desc: "Тапни в режиме «+» — кликер запомнит координаты. Удаляй, добавляй точки в любой момент.", tag: "ПРИЦЕЛ", color: "cyan" },
+  { icon: "BookMarked", title: "Профили", desc: "Сохраняй готовые конфиги: «Фарм», «PvP», «Тихий». Переключай одним тапом.", tag: "ПРОФИЛИ", color: "green" },
+  { icon: "Shuffle", title: "Рандомизация", desc: "Случайное отклонение позиции и задержки ±1–50%. Имитирует живые касания.", tag: "АНТИБАН", color: "cyan" },
+  { icon: "BarChart3", title: "Статистика", desc: "История тапов по дням, рекорды, CPS. Всё сохраняется на телефоне.", tag: "СТАТЫ", color: "green" },
+  { icon: "Clock", title: "Авто-стоп", desc: "Задай количество тапов или время — кликер остановится сам.", tag: "АВТО", color: "cyan" },
+  { icon: "Repeat", title: "Мультиточечный режим", desc: "По очереди (1→2→3) или одновременно все точки — мультитач.", tag: "МУЛЬТИ", color: "green" },
+  { icon: "Hand", title: "Режимы клика", desc: "Одиночный, двойной или долгий тап — выбирай под любую игру.", tag: "РЕЖИМ", color: "cyan" },
+  { icon: "Moon", title: "Работает в фоне", desc: "Закрой приложение — кликер продолжает работать через overlay.", tag: "ФОНОВЫЙ", color: "green" },
+  { icon: "Vibrate", title: "Вибрация", desc: "Тактильный отклик при запуске и остановке. Никаких сомнений — работает!", tag: "ОТКЛИК", color: "cyan" },
 ];
 
 const INSTALL_STEPS = [
-  {
-    num: "01",
-    title: "Скачай APK",
-    desc: "Нажми кнопку «Скачать APK» ниже. Файл ~8MB, загружается за секунды.",
-    icon: "Download",
-  },
-  {
-    num: "02",
-    title: "Разреши установку",
-    desc: "Открой APK → Настройки → «Установка из неизвестных источников» → Разрешить для браузера.",
-    icon: "Shield",
-  },
-  {
-    num: "03",
-    title: "Дай права Accessibility",
-    desc: "При первом запуске приложение попросит права Accessibility Service — это нужно для тапов поверх игр.",
-    icon: "Accessibility",
-  },
-  {
-    num: "04",
-    title: "Разреши overlay",
-    desc: "«Отображать поверх других приложений» → найди ClickForge → включи. Теперь кнопка будет везде.",
-    icon: "Layers",
-  },
-  {
-    num: "05",
-    title: "Настрой и играй",
-    desc: "Открой игру, нажми плавающую кнопку ⚡ — появится панель. Тапни «Выбрать точку» → кликни по нужному месту.",
-    icon: "Gamepad2",
-  },
+  { num: "01", title: "Открой приложение", desc: "Нажми «Открыть приложение» на этой странице. Оно откроется в браузере.", icon: "Smartphone" },
+  { num: "02", title: "Добавь на экран", desc: "В браузере: меню (⋮) → «Добавить на главный экран» → «Установить». Теперь это приложение на твоём телефоне.", icon: "PlusSquare" },
+  { num: "03", title: "Запусти с экрана", desc: "Найди иконку ClickForge на рабочем столе. Запускается как обычное приложение — без браузера.", icon: "Play" },
+  { num: "04", title: "Добавь точки тапа", desc: "На экране кликера нажми «+» → тапни в нужное место → точка сохранена.", icon: "Crosshair" },
+  { num: "05", title: "Нажми ⚡ и играй", desc: "Горячая кнопка запустит кликер. Переключись в игру — кнопка останется поверх.", icon: "Zap" },
 ];
 
 const FAQS = [
-  {
-    q: "Кликер не мешает управлению?",
-    a: "Нет. Accessibility Service тапает в заданную точку независимо от твоих жестов. Ты двигаешь джойстиком, свайпаешь — кликер продолжает тапать своё место.",
-  },
-  {
-    q: "Нужен root?",
-    a: "Нет! Работает без root через стандартный Android Accessibility Service. Тот же механизм используют приложения для людей с ограниченными возможностями.",
-  },
-  {
-    q: "Работает в любой игре?",
-    a: "В большинстве Android-игр — да. Некоторые игры с агрессивным античитом (как PUBG Mobile) могут блокировать Accessibility. Для таких есть режим рандомизации.",
-  },
-  {
-    q: "Что такое профили?",
-    a: "Это сохранённые наборы настроек. Например: «Фарм» — 500мс, точка на кнопке фарма; «PvP» — 80мс, несколько точек. Переключаешь одним тапом.",
-  },
-  {
-    q: "Сколько точек можно задать?",
-    a: "До 10 точек тапа. Можно выбрать режим: по очереди (1→2→3→...) или одновременно (мультитач).",
-  },
-  {
-    q: "Телефон разрядится быстрее?",
-    a: "Незначительно. Приложение очень лёгкое (~8MB). Если беспокоит — используй таймер авто-остановки.",
-  },
+  { q: "Это реальное приложение?", a: "Да! PWA (Progressive Web App) — современный стандарт приложений. Устанавливается с браузера, работает как нативное приложение, не требует магазина. Chrome на Android поддерживает полностью." },
+  { q: "Кликер мешает управлению в игре?", a: "Нет. Кнопка ⚡ работает поверх всего, тапы кликера не перехватывают жесты — джойстик, свайпы и движения работают в штатном режиме." },
+  { q: "Данные сохраняются?", a: "Все профили и статистика хранятся локально на устройстве. Никаких серверов, никакой регистрации — всё приватно." },
+  { q: "Работает без интернета?", a: "После установки — да. Service Worker кэширует приложение, оно работает полностью офлайн." },
+  { q: "Сколько профилей можно создать?", a: "Сколько угодно. Каждый профиль хранит свои точки, задержку, режим, авто-стоп и другие настройки." },
+  { q: "Как переместить кнопку ⚡?", a: "Зажми и тащи кнопку в любое место экрана. Она сохранит позицию." },
 ];
 
-function PhoneMockup() {
-  const [running, setRunning] = useState(false);
-  const [taps, setTaps] = useState(0);
-  const [delay, setDelay] = useState(300);
-
-  const toggle = () => {
-    setRunning((r) => {
-      if (!r) {
-        const iv = setInterval(() => setTaps((t) => t + 1), delay);
-        (window as unknown as Record<string, unknown>).__clickerInterval = iv;
-      } else {
-        clearInterval((window as unknown as Record<string, unknown>).__clickerInterval as ReturnType<typeof setInterval>);
-      }
-      return !r;
-    });
-  };
-
-  return (
-    <div className="relative mx-auto" style={{ width: 220 }}>
-      {/* Phone frame */}
-      <div className="relative rounded-3xl border-4 overflow-hidden"
-        style={{
-          borderColor: "#1e3a2a",
-          background: "#0a0f14",
-          boxShadow: "0 0 60px rgba(0,255,136,0.2), 0 40px 80px rgba(0,0,0,0.6)",
-          height: 420,
-        }}
-      >
-        {/* Notch */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 rounded-b-xl z-10"
-          style={{ background: "#0a0f14" }}
-        />
-
-        {/* Game screen bg */}
-        <div className="absolute inset-0"
-          style={{
-            background: "linear-gradient(160deg, #0d1f12 0%, #071020 60%, #0d0814 100%)",
-            backgroundImage: "radial-gradient(ellipse at 30% 60%, rgba(0,255,136,0.04) 0%, transparent 60%)",
-          }}
-        />
-
-        {/* Fake game UI */}
-        <div className="absolute inset-0 p-4 pt-8">
-          <div className="flex justify-between items-start mb-3">
-            <div className="rounded px-2 py-1 font-mono-ibm text-xs" style={{ background: "rgba(0,0,0,0.5)", color: "#00ff88" }}>
-              LVL 47
-            </div>
-            <div className="rounded px-2 py-1 font-mono-ibm text-xs text-yellow-400" style={{ background: "rgba(0,0,0,0.5)" }}>
-              ⚔ 12,440 HP
-            </div>
-          </div>
-
-          {/* Game area */}
-          <div className="rounded-xl flex items-center justify-center relative"
-            style={{ height: 180, background: "rgba(0,0,0,0.3)", border: "1px solid rgba(0,255,136,0.1)" }}
-          >
-            <span className="text-slate-600 font-mono-ibm text-xs text-center px-4">
-              🎮 игра запущена
-            </span>
-            {/* Target point */}
-            <div className="absolute" style={{ bottom: 30, right: 30 }}>
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
-                style={{ background: "rgba(255,165,0,0.8)", color: "#000", fontSize: 10 }}
-              >
-                FARM
-              </div>
-              {running && (
-                <div className="absolute inset-0 rounded-full animate-ping"
-                  style={{ background: "rgba(0,255,136,0.4)" }}
-                />
-              )}
-            </div>
-          </div>
-
-          {/* Stats bar */}
-          <div className="mt-3 rounded-lg p-2 flex justify-around"
-            style={{ background: "rgba(0,255,136,0.05)", border: "1px solid rgba(0,255,136,0.15)" }}
-          >
-            <div className="text-center">
-              <div className="font-mono-ibm font-bold text-sm" style={{ color: "#00ff88" }}>{taps}</div>
-              <div className="font-mono-ibm text-xs text-slate-500">тапов</div>
-            </div>
-            <div className="text-center">
-              <div className="font-mono-ibm font-bold text-sm" style={{ color: "#00e5ff" }}>{(1000 / delay).toFixed(1)}</div>
-              <div className="font-mono-ibm text-xs text-slate-500">CPS</div>
-            </div>
-            <div className="text-center">
-              <div className="font-mono-ibm font-bold text-sm text-white">{delay}мс</div>
-              <div className="font-mono-ibm text-xs text-slate-500">задержка</div>
-            </div>
-          </div>
-
-          {/* Mini delay slider */}
-          <div className="mt-3">
-            <input
-              type="range"
-              min={50}
-              max={2000}
-              step={50}
-              value={delay}
-              onChange={(e) => setDelay(Number(e.target.value))}
-              className="w-full"
-              style={{ "--range-progress": `${((delay - 50) / 1950) * 100}%` } as React.CSSProperties}
-            />
-          </div>
-        </div>
-
-        {/* Bottom nav */}
-        <div className="absolute bottom-0 left-0 right-0 flex justify-around py-2 border-t"
-          style={{ background: "rgba(7,13,20,0.95)", borderColor: "rgba(0,255,136,0.1)" }}
-        >
-          {["🏠", "⚙️", "📋"].map((icon, i) => (
-            <div key={i} className="p-2 rounded-lg text-sm" style={{ opacity: i === 0 ? 1 : 0.4 }}>{icon}</div>
-          ))}
-        </div>
-      </div>
-
-      {/* Floating overlay button */}
-      <button
-        onClick={toggle}
-        className="absolute z-20 flex items-center justify-center rounded-full font-rajdhani font-bold text-sm transition-all"
-        style={{
-          width: 52,
-          height: 52,
-          right: -16,
-          top: 120,
-          background: running ? "var(--neon-cyan)" : "var(--neon-green)",
-          color: "var(--dark-bg)",
-          boxShadow: running
-            ? "0 0 20px rgba(0,229,255,0.8), 0 4px 16px rgba(0,0,0,0.4)"
-            : "0 0 20px rgba(0,255,136,0.8), 0 4px 16px rgba(0,0,0,0.4)",
-        }}
-      >
-        {running ? "⏹" : "⚡"}
-      </button>
-
-      {/* Label */}
-      <div className="absolute font-mono-ibm text-xs"
-        style={{ right: 44, top: 133, color: "var(--neon-green)", whiteSpace: "nowrap" }}
-      >
-        {running ? "СТОП" : "СТАРТ"}
-      </div>
-    </div>
-  );
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
     <div
-      className="rounded-lg border cursor-pointer transition-all"
-      style={{
-        borderColor: open ? "rgba(0,255,136,0.3)" : "var(--dark-border)",
-        background: open ? "rgba(0,255,136,0.03)" : "var(--dark-card)",
-      }}
+      className="rounded-xl border cursor-pointer transition-all"
+      style={{ borderColor: open ? "rgba(0,255,136,0.3)" : "var(--dark-border)", background: open ? "rgba(0,255,136,0.03)" : "var(--dark-card)" }}
       onClick={() => setOpen(!open)}
     >
       <div className="flex items-center justify-between p-5">
-        <span className="font-rajdhani font-semibold text-white">{q}</span>
-        <Icon
-          name={open ? "ChevronUp" : "ChevronDown"}
-          size={18}
-          style={{ color: open ? "var(--neon-green)" : "#64748b", flexShrink: 0 }}
-        />
+        <span className="font-rajdhani font-semibold text-white pr-4">{q}</span>
+        <Icon name={open ? "ChevronUp" : "ChevronDown"} size={18}
+          style={{ color: open ? "var(--neon-green)" : "#64748b", flexShrink: 0 }} />
       </div>
       {open && (
         <div className="px-5 pb-5 text-slate-400 text-sm leading-relaxed border-t pt-4"
-          style={{ borderColor: "rgba(0,255,136,0.1)" }}
-        >
+          style={{ borderColor: "rgba(0,255,136,0.1)" }}>
           {a}
         </div>
       )}
@@ -331,52 +68,58 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-const Index = () => {
-  const [navOpen, setNavOpen] = useState(false);
+export default function Index() {
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [installed, setInstalled] = useState(false);
 
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-    setNavOpen(false);
+  useEffect(() => {
+    if (window.matchMedia("(display-mode: standalone)").matches) setInstalled(true);
+    const handler = (e: Event) => { e.preventDefault(); setDeferredPrompt(e as BeforeInstallPromptEvent); };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (deferredPrompt) {
+      await deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") setInstalled(true);
+      setDeferredPrompt(null);
+    } else {
+      setShowInstallModal(true);
+    }
   };
+
+  const scrollTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 
   return (
     <div className="min-h-screen" style={{ background: "var(--dark-bg)" }}>
 
       {/* NAV */}
       <nav className="fixed top-0 left-0 right-0 z-50 border-b"
-        style={{ background: "rgba(7,13,20,0.95)", backdropFilter: "blur(12px)", borderColor: "var(--dark-border)" }}
-      >
+        style={{ background: "rgba(7,13,20,0.95)", backdropFilter: "blur(12px)", borderColor: "var(--dark-border)" }}>
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <a href="/app" className="flex items-center gap-2">
             <div className="w-7 h-7 rounded flex items-center justify-center" style={{ background: "var(--neon-green)" }}>
-              <div className="w-3 h-3 rounded-full" style={{ background: "var(--dark-bg)" }}></div>
+              <div className="w-3 h-3 rounded-full" style={{ background: "var(--dark-bg)" }} />
             </div>
             <span className="font-rajdhani font-bold text-xl text-white tracking-wider">
               CLICK<span style={{ color: "var(--neon-green)" }}>FORGE</span>
             </span>
-            <span className="font-mono-ibm text-xs px-2 py-0.5 rounded" style={{ background: "rgba(0,255,136,0.1)", color: "var(--neon-green)" }}>
-              Android
-            </span>
-          </div>
-
+            <span className="font-mono-ibm text-xs px-2 py-0.5 rounded hidden sm:block"
+              style={{ background: "rgba(0,255,136,0.1)", color: "var(--neon-green)" }}>PWA</span>
+          </a>
           <div className="hidden md:flex items-center gap-1">
-            {NAV_ITEMS.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => scrollTo(item.id)}
-                className="px-4 py-2 rounded font-rajdhani font-semibold text-sm tracking-wider text-slate-400 hover:text-white transition-colors"
-              >
+            {NAV_ITEMS.map(item => (
+              <button key={item.id} onClick={() => scrollTo(item.id)}
+                className="px-4 py-2 rounded font-rajdhani font-semibold text-sm tracking-wider text-slate-400 hover:text-white transition-colors">
                 {item.label}
               </button>
             ))}
           </div>
-
-          <a
-            href="#"
-            onClick={(e) => { e.preventDefault(); scrollTo("home"); }}
-            className="neon-btn-green px-5 py-2 rounded font-rajdhani font-bold text-sm tracking-widest"
-          >
-            ↓ СКАЧАТЬ APK
+          <a href="/app" className="neon-btn-green px-5 py-2 rounded font-rajdhani font-bold text-sm tracking-widest">
+            ОТКРЫТЬ ПРИЛОЖЕНИЕ →
           </a>
         </div>
       </nav>
@@ -384,81 +127,63 @@ const Index = () => {
       {/* HERO */}
       <section id="home" className="min-h-screen flex items-center pt-20 hex-bg relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 80% 40%, rgba(0,255,136,0.06) 0%, transparent 60%)" }}
-        />
-        <div className="absolute bottom-0 left-0 w-1/2 h-1/2 pointer-events-none"
-          style={{ background: "radial-gradient(ellipse at 20% 80%, rgba(0,229,255,0.04) 0%, transparent 60%)" }}
-        />
-
+          style={{ background: "radial-gradient(ellipse at 80% 40%, rgba(0,255,136,0.06) 0%, transparent 60%)" }} />
         <div className="max-w-6xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center py-16">
-          <div className="space-y-8 order-2 lg:order-1">
+          <div className="space-y-8">
             <div className="flex items-center gap-3">
-              <div className="pulse-dot"></div>
+              <div className="pulse-dot" />
               <span className="font-mono-ibm text-xs tracking-widest" style={{ color: "var(--neon-green)" }}>
-                ANDROID АВТОКЛИКЕР
+                АВТОКЛИКЕР · ANDROID · БЕСПЛАТНО
               </span>
             </div>
-
             <h1 className="font-rajdhani font-bold leading-none" style={{ fontSize: "clamp(40px, 6vw, 80px)" }}>
               <span className="text-white block">ТАПАЙ САМ.</span>
               <span className="block" style={{ color: "var(--neon-green)" }}>ПОКА ТЫ</span>
               <span className="text-white block">ИГРАЕШЬ.</span>
             </h1>
-
             <p className="text-slate-400 text-lg leading-relaxed max-w-lg">
-              Плавающая кнопка <span className="text-white font-medium">поверх любой игры</span>. Выбери точку тапа, настрой задержку — кликер работает пока ты двигаешь джойстиком и проходишь игру.
+              Полноценное приложение прямо в браузере. Устанавливается на телефон как APK —{" "}
+              <span className="text-white font-medium">без Google Play, без рекламы</span>. Профили, overlay-кнопка, статистика.
             </p>
 
-            {/* APK download card */}
-            <div className="rounded-xl p-5 border relative overflow-hidden"
-              style={{
-                background: "rgba(0,255,136,0.05)",
-                borderColor: "rgba(0,255,136,0.25)",
-                boxShadow: "0 0 30px rgba(0,255,136,0.08)"
-              }}
-            >
+            {/* Download card */}
+            <div className="rounded-2xl p-6 border relative overflow-hidden"
+              style={{ background: "rgba(0,255,136,0.04)", borderColor: "rgba(0,255,136,0.25)", boxShadow: "0 0 40px rgba(0,255,136,0.08)" }}>
               <div className="absolute top-0 left-0 right-0 h-px"
-                style={{ background: "linear-gradient(90deg, transparent, var(--neon-green), transparent)" }}
-              />
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ background: "rgba(0,255,136,0.15)", border: "1px solid rgba(0,255,136,0.3)" }}
-                >
-                  <span className="text-2xl">📱</span>
-                </div>
-                <div className="flex-1">
-                  <div className="font-rajdhani font-bold text-white text-lg">ClickForge v2.4</div>
-                  <div className="font-mono-ibm text-xs text-slate-400 mt-0.5">Android 8.0+ · ~8.2 MB · Без root</div>
-                  <div className="flex gap-3 mt-1">
-                    <span className="font-mono-ibm text-xs" style={{ color: "var(--neon-green)" }}>✓ Бесплатно</span>
-                    <span className="font-mono-ibm text-xs" style={{ color: "var(--neon-cyan)" }}>✓ Без рекламы</span>
-                    <span className="font-mono-ibm text-xs text-slate-500">✓ Без регистрации</span>
+                style={{ background: "linear-gradient(90deg, transparent, var(--neon-green), transparent)" }} />
+              <div className="flex items-center gap-4 mb-5">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                  style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.25)" }}>⚡</div>
+                <div>
+                  <div className="font-rajdhani font-bold text-white text-xl">ClickForge v2.4</div>
+                  <div className="font-mono-ibm text-xs text-slate-400">PWA · Android + iOS · Офлайн · Бесплатно</div>
+                  <div className="flex gap-3 mt-1.5 flex-wrap">
+                    <span className="font-mono-ibm text-xs" style={{ color: "var(--neon-green)" }}>✓ 12 функций</span>
+                    <span className="font-mono-ibm text-xs" style={{ color: "var(--neon-cyan)" }}>✓ Без регистрации</span>
+                    <span className="font-mono-ibm text-xs text-slate-500">✓ Данные на устройстве</span>
                   </div>
                 </div>
               </div>
-              <div className="mt-4 flex gap-3">
-                <button className="flex-1 py-3 rounded-lg font-rajdhani font-bold text-base tracking-wider flex items-center justify-center gap-2 neon-btn-green animate-border-pulse">
-                  <Icon name="Download" size={18} />
-                  СКАЧАТЬ APK
+              <div className="grid grid-cols-2 gap-3">
+                <a href="/app"
+                  className="py-4 rounded-xl font-rajdhani font-bold text-lg tracking-wider flex items-center justify-center gap-2 neon-btn-green animate-border-pulse">
+                  <Icon name="Smartphone" size={20} />
+                  ОТКРЫТЬ
+                </a>
+                <button onClick={handleInstall}
+                  className="py-4 rounded-xl font-rajdhani font-bold text-lg tracking-wider flex items-center justify-center gap-2 neon-btn-cyan">
+                  <Icon name="Download" size={20} />
+                  {installed ? "УСТАНОВЛЕНО ✓" : "УСТАНОВИТЬ"}
                 </button>
-                <button className="px-4 py-3 rounded-lg border font-rajdhani font-semibold text-sm text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-2"
-                  style={{ borderColor: "var(--dark-border)" }}
-                  onClick={() => scrollTo("how")}
-                >
-                  <Icon name="BookOpen" size={16} />
-                  Инструкция
-                </button>
+              </div>
+              <div className="mt-3 text-center font-mono-ibm text-xs text-slate-600">
+                «Установить» → «Добавить на главный экран» → иконка на рабочем столе
               </div>
             </div>
 
-            {/* Mini stats */}
-            <div className="grid grid-cols-3 gap-4 pt-2">
-              {[
-                { v: "12+", l: "функций" },
-                { v: "1мс", l: "мин. задержка" },
-                { v: "10", l: "точек тапа" },
-              ].map((s) => (
-                <div key={s.l} className="text-center game-card rounded-lg p-3">
+            <div className="grid grid-cols-3 gap-3">
+              {[{ v: "12+", l: "функций" }, { v: "10мс", l: "мин. задержка" }, { v: "∞", l: "профилей" }].map(s => (
+                <div key={s.l} className="game-card rounded-xl p-3 text-center">
                   <div className="font-rajdhani font-bold text-2xl neon-text-green">{s.v}</div>
                   <div className="font-mono-ibm text-xs text-slate-500 mt-0.5">{s.l}</div>
                 </div>
@@ -467,9 +192,52 @@ const Index = () => {
           </div>
 
           {/* Phone mockup */}
-          <div className="flex justify-center order-1 lg:order-2">
-            <div className="animate-float">
-              <PhoneMockup />
+          <div className="hidden lg:flex justify-center">
+            <div className="animate-float relative">
+              <div className="rounded-3xl border-4 overflow-hidden relative"
+                style={{ width: 240, height: 500, borderColor: "#1e3a2a", background: "var(--dark-bg)", boxShadow: "0 0 60px rgba(0,255,136,0.2), 0 40px 80px rgba(0,0,0,0.6)" }}>
+                <div className="absolute inset-0 flex flex-col">
+                  <div className="flex justify-between px-4 pt-3 pb-1">
+                    <span className="font-rajdhani font-bold text-xs tracking-wider" style={{ color: "var(--neon-green)" }}>CLICK<span className="text-white">FORGE</span></span>
+                    <span className="font-mono-ibm text-xs text-slate-500">Основной</span>
+                  </div>
+                  <div className="grid grid-cols-3 border-y text-center" style={{ borderColor: "var(--dark-border)" }}>
+                    {[["4,821", "ТАПОВ"], ["02:14", "ВРЕМЯ"], ["3.3", "CPS"]].map(([v, l]) => (
+                      <div key={l} className="py-2 border-r last:border-r-0" style={{ borderColor: "var(--dark-border)" }}>
+                        <div className="font-rajdhani font-bold text-sm" style={{ color: "var(--neon-green)" }}>{v}</div>
+                        <div className="font-mono-ibm text-xs text-slate-600">{l}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex-1 relative"
+                    style={{ backgroundImage: "linear-gradient(rgba(0,255,136,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,136,0.07) 1px, transparent 1px)", backgroundSize: "10% 10%" }}>
+                    <div className="absolute" style={{ left: "55%", top: "55%", transform: "translate(-50%,-50%)" }}>
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center font-rajdhani font-bold text-sm"
+                        style={{ border: "2px solid var(--neon-green)", color: "var(--neon-green)", background: "rgba(0,255,136,0.1)" }}>1</div>
+                      <div className="absolute inset-0 rounded-full animate-ping" style={{ background: "rgba(0,255,136,0.2)" }} />
+                    </div>
+                    <div className="absolute bottom-3 right-3 w-8 h-8 rounded-full flex items-center justify-center font-bold"
+                      style={{ background: "rgba(0,255,136,0.1)", border: "1px solid rgba(0,255,136,0.3)", color: "var(--neon-green)" }}>+</div>
+                  </div>
+                  <div className="p-3 border-t space-y-2" style={{ borderColor: "var(--dark-border)" }}>
+                    <div className="rounded py-2 text-center font-rajdhani font-bold text-base"
+                      style={{ background: "rgba(0,255,136,0.15)", border: "1px solid var(--neon-green)", color: "var(--neon-green)" }}>⏹ ОСТАНОВИТЬ</div>
+                    <div className="grid grid-cols-3 gap-1.5">
+                      {["Рандом", "Вибро", "Авто-стоп"].map(l => (
+                        <div key={l} className="py-1.5 rounded text-center font-mono-ibm text-xs"
+                          style={{ border: "1px solid var(--dark-border)", color: "#475569" }}>{l}</div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex border-t" style={{ borderColor: "var(--dark-border)", background: "rgba(7,13,20,0.98)" }}>
+                    {["⊕", "📋", "⚙", "📊"].map((ic, i) => (
+                      <div key={i} className="flex-1 py-2 text-center text-sm" style={{ color: i === 0 ? "var(--neon-green)" : "#334155" }}>{ic}</div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="absolute w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold"
+                style={{ right: -20, top: "35%", background: "var(--neon-green)", color: "var(--dark-bg)", boxShadow: "0 0 24px rgba(0,255,136,0.9)" }}>⚡</div>
             </div>
           </div>
         </div>
@@ -479,48 +247,25 @@ const Index = () => {
       <section id="features" className="py-24">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <div className="font-mono-ibm text-xs tracking-widest mb-3" style={{ color: "var(--neon-cyan)" }}>
-              ВСЕ ВОЗМОЖНОСТИ
-            </div>
+            <div className="font-mono-ibm text-xs tracking-widest mb-3" style={{ color: "var(--neon-cyan)" }}>ВСЕ ВОЗМОЖНОСТИ</div>
             <h2 className="font-rajdhani font-bold text-white" style={{ fontSize: "clamp(36px, 5vw, 60px)" }}>
-              12 ФУНКЦИЙ <span style={{ color: "var(--neon-green)" }}>В ОДНОМ APK</span>
+              12 ФУНКЦИЙ <span style={{ color: "var(--neon-green)" }}>В ОДНОМ ПРИЛОЖЕНИИ</span>
             </h2>
-            <p className="text-slate-400 mt-4 max-w-xl mx-auto">
-              Один файл — всё внутри. Никаких подписок, никакой рекламы, никакого интернета.
-            </p>
           </div>
-
-          {/* Big 2 features */}
           <div className="grid md:grid-cols-2 gap-5 mb-5">
             {ALL_FEATURES.slice(0, 2).map((f, i) => (
-              <div key={i} className="game-card rounded-xl p-6 border-l-2 relative overflow-hidden group"
-                style={{ borderLeftColor: f.color === "green" ? "var(--neon-green)" : "var(--neon-cyan)" }}
-              >
-                <div className="absolute top-0 right-0 w-24 h-24 rounded-full pointer-events-none"
-                  style={{ background: f.color === "green" ? "rgba(0,255,136,0.04)" : "rgba(0,229,255,0.04)", transform: "translate(30%, -30%)" }}
-                />
+              <div key={i} className="game-card rounded-2xl p-6 border-l-2 relative overflow-hidden group"
+                style={{ borderLeftColor: f.color === "green" ? "var(--neon-green)" : "var(--neon-cyan)" }}>
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-110"
-                    style={{
-                      background: f.color === "green" ? "rgba(0,255,136,0.1)" : "rgba(0,229,255,0.1)",
-                      border: `1px solid ${f.color === "green" ? "rgba(0,255,136,0.25)" : "rgba(0,229,255,0.25)"}`,
-                    }}
-                  >
-                    <Icon name={f.icon} fallback="Zap" size={22}
-                      style={{ color: f.color === "green" ? "var(--neon-green)" : "var(--neon-cyan)" }}
-                    />
+                    style={{ background: f.color === "green" ? "rgba(0,255,136,0.1)" : "rgba(0,229,255,0.1)", border: `1px solid ${f.color === "green" ? "rgba(0,255,136,0.25)" : "rgba(0,229,255,0.25)"}` }}>
+                    <Icon name={f.icon} fallback="Zap" size={22} style={{ color: f.color === "green" ? "var(--neon-green)" : "var(--neon-cyan)" }} />
                   </div>
-                  <div className="flex-1">
+                  <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-rajdhani font-bold text-white text-lg">{f.title}</h3>
                       <span className="font-mono-ibm text-xs px-2 py-0.5 rounded"
-                        style={{
-                          background: f.color === "green" ? "rgba(0,255,136,0.1)" : "rgba(0,229,255,0.1)",
-                          color: f.color === "green" ? "var(--neon-green)" : "var(--neon-cyan)",
-                        }}
-                      >
-                        {f.tag}
-                      </span>
+                        style={{ background: f.color === "green" ? "rgba(0,255,136,0.1)" : "rgba(0,229,255,0.1)", color: f.color === "green" ? "var(--neon-green)" : "var(--neon-cyan)" }}>{f.tag}</span>
                     </div>
                     <p className="text-slate-400 text-sm leading-relaxed">{f.desc}</p>
                   </div>
@@ -528,30 +273,16 @@ const Index = () => {
               </div>
             ))}
           </div>
-
-          {/* Grid of remaining */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {ALL_FEATURES.slice(2).map((f, i) => (
               <div key={i} className="game-card rounded-xl p-5 group">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-9 h-9 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
-                    style={{
-                      background: f.color === "green" ? "rgba(0,255,136,0.08)" : "rgba(0,229,255,0.08)",
-                      border: `1px solid ${f.color === "green" ? "rgba(0,255,136,0.2)" : "rgba(0,229,255,0.2)"}`,
-                    }}
-                  >
-                    <Icon name={f.icon} fallback="Zap" size={16}
-                      style={{ color: f.color === "green" ? "var(--neon-green)" : "var(--neon-cyan)" }}
-                    />
+                    style={{ background: f.color === "green" ? "rgba(0,255,136,0.08)" : "rgba(0,229,255,0.08)", border: `1px solid ${f.color === "green" ? "rgba(0,255,136,0.2)" : "rgba(0,229,255,0.2)"}` }}>
+                    <Icon name={f.icon} fallback="Zap" size={16} style={{ color: f.color === "green" ? "var(--neon-green)" : "var(--neon-cyan)" }} />
                   </div>
                   <span className="font-mono-ibm text-xs px-1.5 py-0.5 rounded"
-                    style={{
-                      background: f.color === "green" ? "rgba(0,255,136,0.07)" : "rgba(0,229,255,0.07)",
-                      color: f.color === "green" ? "rgba(0,255,136,0.7)" : "rgba(0,229,255,0.7)",
-                    }}
-                  >
-                    {f.tag}
-                  </span>
+                    style={{ background: f.color === "green" ? "rgba(0,255,136,0.07)" : "rgba(0,229,255,0.07)", color: f.color === "green" ? "rgba(0,255,136,0.7)" : "rgba(0,229,255,0.7)" }}>{f.tag}</span>
                 </div>
                 <h3 className="font-rajdhani font-bold text-white mb-1.5">{f.title}</h3>
                 <p className="text-slate-400 text-xs leading-relaxed">{f.desc}</p>
@@ -561,249 +292,139 @@ const Index = () => {
         </div>
       </section>
 
-      {/* HOW TO INSTALL */}
+      {/* INSTALL */}
       <section id="how" className="py-24" style={{ background: "rgba(0,255,136,0.015)" }}>
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-16">
-            <div className="font-mono-ibm text-xs tracking-widest mb-3" style={{ color: "var(--neon-green)" }}>
-              ПОШАГОВО
-            </div>
-            <h2 className="font-rajdhani font-bold text-white" style={{ fontSize: "clamp(36px, 5vw, 60px)" }}>
+            <div className="font-mono-ibm text-xs tracking-widest mb-3" style={{ color: "var(--neon-green)" }}>ПОШАГОВО</div>
+            <h2 className="font-rajdhani font-bold text-white" style={{ fontSize: "clamp(32px, 5vw, 56px)" }}>
               КАК <span style={{ color: "var(--neon-cyan)" }}>УСТАНОВИТЬ</span>
             </h2>
-            <p className="text-slate-400 mt-4 max-w-lg mx-auto">
-              5 минут — и кликер работает поверх любой игры
-            </p>
+            <p className="text-slate-400 mt-4">2 минуты — и кликер на рабочем столе телефона</p>
           </div>
-
-          <div className="relative">
-            {/* Vertical line */}
+          <div className="relative space-y-4">
             <div className="absolute left-6 top-8 bottom-8 w-px hidden md:block"
-              style={{ background: "linear-gradient(to bottom, var(--neon-green), var(--neon-cyan), transparent)" }}
-            />
-
-            <div className="space-y-5">
-              {INSTALL_STEPS.map((step, i) => (
-                <div key={i} className="flex gap-6 items-start">
-                  <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-mono-ibm font-bold text-sm z-10"
-                    style={{
-                      background: "var(--dark-bg)",
-                      border: `2px solid ${i < 2 ? "var(--neon-green)" : i < 4 ? "var(--neon-cyan)" : "var(--neon-green)"}`,
-                      color: i < 2 ? "var(--neon-green)" : i < 4 ? "var(--neon-cyan)" : "var(--neon-green)",
-                      boxShadow: `0 0 12px ${i < 2 ? "rgba(0,255,136,0.3)" : "rgba(0,229,255,0.3)"}`,
-                    }}
-                  >
-                    {step.num}
-                  </div>
-                  <div className="game-card rounded-xl p-5 flex-1 flex gap-4 items-start">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: "rgba(0,255,136,0.06)", border: "1px solid rgba(0,255,136,0.15)" }}
-                    >
-                      <Icon name={step.icon} fallback="CheckCircle" size={18} style={{ color: "var(--neon-green)" }} />
-                    </div>
-                    <div>
-                      <h3 className="font-rajdhani font-bold text-white text-lg">{step.title}</h3>
-                      <p className="text-slate-400 text-sm mt-1 leading-relaxed">{step.desc}</p>
-                    </div>
-                  </div>
+              style={{ background: "linear-gradient(to bottom, var(--neon-green), var(--neon-cyan), transparent)" }} />
+            {INSTALL_STEPS.map((step, i) => (
+              <div key={i} className="flex gap-6 items-start">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-mono-ibm font-bold text-sm z-10"
+                  style={{ background: "var(--dark-bg)", border: `2px solid ${i < 2 ? "var(--neon-green)" : "var(--neon-cyan)"}`, color: i < 2 ? "var(--neon-green)" : "var(--neon-cyan)", boxShadow: `0 0 12px ${i < 2 ? "rgba(0,255,136,0.3)" : "rgba(0,229,255,0.3)"}` }}>
+                  {step.num}
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Warning note */}
-          <div className="mt-10 rounded-xl p-5 flex gap-4 items-start"
-            style={{ background: "rgba(255,165,0,0.05)", border: "1px solid rgba(255,165,0,0.2)" }}
-          >
-            <Icon name="AlertTriangle" size={20} style={{ color: "#ffa500", flexShrink: 0, marginTop: 2 }} />
-            <div>
-              <div className="font-rajdhani font-bold text-white mb-1">Важно про Accessibility Service</div>
-              <p className="text-slate-400 text-sm leading-relaxed">
-                Android спросит разрешение на «Accessibility Service» — это стандартный механизм автоматизации, не вирус. Без него приложение физически не может тапать поверх других приложений. Разреши только для ClickForge.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* OVERLAY SHOWCASE */}
-      <section className="py-24">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="rounded-2xl overflow-hidden relative"
-            style={{
-              background: "linear-gradient(135deg, rgba(0,255,136,0.06) 0%, rgba(0,229,255,0.04) 50%, rgba(191,0,255,0.03) 100%)",
-              border: "1px solid rgba(0,255,136,0.15)",
-            }}
-          >
-            <div className="absolute top-0 left-0 right-0 h-px"
-              style={{ background: "linear-gradient(90deg, transparent, var(--neon-green), var(--neon-cyan), transparent)" }}
-            />
-
-            <div className="p-10 md:p-16 grid md:grid-cols-2 gap-12 items-center">
-              <div className="space-y-6">
-                <div className="font-mono-ibm text-xs tracking-widest" style={{ color: "var(--neon-cyan)" }}>
-                  OVERLAY ПАНЕЛЬ
-                </div>
-                <h3 className="font-rajdhani font-bold text-white" style={{ fontSize: "clamp(28px, 4vw, 48px)" }}>
-                  Панель управления <span style={{ color: "var(--neon-green)" }}>всегда рядом</span>
-                </h3>
-                <p className="text-slate-400 leading-relaxed">
-                  Плавающая мини-панель поверх игры. Перетаскивай куда удобно, сворачивай в точку, разворачивай одним тапом.
-                </p>
-                <div className="space-y-3">
-                  {[
-                    "⚡ Горячая кнопка старт/стоп — всегда поверх экрана",
-                    "📊 Счётчик тапов и CPS прямо на панели",
-                    "🎯 Переключение профилей без открытия меню",
-                    "🔲 Регулировка прозрачности — от 20% до 100%",
-                    "↔️ Перетаскивание в любое место экрана",
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0" style={{ background: "var(--neon-green)" }}></div>
-                      <span className="text-slate-300 text-sm">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Overlay mockup */}
-              <div className="flex justify-center">
-                <div className="relative">
-                  {/* Fake game bg */}
-                  <div className="rounded-2xl w-64 h-80 flex items-center justify-center"
-                    style={{ background: "rgba(0,0,0,0.5)", border: "1px solid rgba(255,255,255,0.05)" }}
-                  >
-                    <span className="text-slate-700 font-mono-ibm text-sm">🎮 Ваша игра</span>
+                <div className="game-card rounded-xl p-5 flex-1 flex gap-4 items-start">
+                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: "rgba(0,255,136,0.06)", border: "1px solid rgba(0,255,136,0.15)" }}>
+                    <Icon name={step.icon} fallback="CheckCircle" size={18} style={{ color: "var(--neon-green)" }} />
                   </div>
-
-                  {/* Overlay panel */}
-                  <div className="absolute rounded-xl p-3 w-44"
-                    style={{
-                      top: 20, right: -20,
-                      background: "rgba(7,13,20,0.92)",
-                      border: "1px solid rgba(0,255,136,0.4)",
-                      boxShadow: "0 0 20px rgba(0,255,136,0.15), 0 8px 24px rgba(0,0,0,0.5)",
-                      backdropFilter: "blur(8px)",
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-rajdhani font-bold text-white text-xs tracking-wider">CLICKFORGE</span>
-                      <div className="flex gap-1">
-                        <div className="pulse-dot" style={{ width: 6, height: 6 }}></div>
-                        <span className="font-mono-ibm text-xs" style={{ color: "var(--neon-green)" }}>ON</span>
-                      </div>
-                    </div>
-                    <div className="space-y-1.5 mb-3">
-                      {[["ПРОФИЛЬ", "Фарм золота"], ["CPS", "3.3"], ["ТАПОВ", "4,821"]].map(([k, v]) => (
-                        <div key={k} className="flex justify-between">
-                          <span className="font-mono-ibm text-xs text-slate-500">{k}</span>
-                          <span className="font-mono-ibm text-xs font-bold" style={{ color: "var(--neon-green)" }}>{v}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      <div className="rounded py-1.5 text-center font-rajdhani font-bold text-xs"
-                        style={{ background: "var(--neon-green)", color: "var(--dark-bg)" }}>
-                        ⏹ СТОП
-                      </div>
-                      <div className="rounded py-1.5 text-center font-rajdhani font-bold text-xs text-slate-500"
-                        style={{ border: "1px solid var(--dark-border)" }}>
-                        ⚙️ ЕЩЁ
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Floating dot button */}
-                  <div className="absolute w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg"
-                    style={{
-                      bottom: 20, left: -16,
-                      background: "var(--neon-green)",
-                      color: "var(--dark-bg)",
-                      boxShadow: "0 0 20px rgba(0,255,136,0.7)",
-                    }}
-                  >
-                    ⚡
+                  <div>
+                    <h3 className="font-rajdhani font-bold text-white text-lg">{step.title}</h3>
+                    <p className="text-slate-400 text-sm mt-1 leading-relaxed">{step.desc}</p>
                   </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="py-24" style={{ background: "rgba(0,229,255,0.01)" }}>
+      <section id="faq" className="py-24">
         <div className="max-w-3xl mx-auto px-6">
           <div className="text-center mb-14">
-            <div className="font-mono-ibm text-xs tracking-widest mb-3" style={{ color: "var(--neon-green)" }}>
-              ВОПРОСЫ
-            </div>
+            <div className="font-mono-ibm text-xs tracking-widest mb-3" style={{ color: "var(--neon-green)" }}>ВОПРОСЫ</div>
             <h2 className="font-rajdhani font-bold text-white" style={{ fontSize: "clamp(32px, 5vw, 56px)" }}>
               ЧАСТО <span style={{ color: "var(--neon-cyan)" }}>СПРАШИВАЮТ</span>
             </h2>
           </div>
           <div className="space-y-3">
-            {FAQS.map((faq, i) => (
-              <FaqItem key={i} q={faq.q} a={faq.a} />
-            ))}
+            {FAQS.map((faq, i) => <FaqItem key={i} q={faq.q} a={faq.a} />)}
           </div>
         </div>
       </section>
 
-      {/* FINAL CTA */}
+      {/* CTA */}
       <section className="py-20">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <div className="pulse-dot mx-auto mb-8"></div>
-          <h2 className="font-rajdhani font-bold text-white mb-4" style={{ fontSize: "clamp(32px, 5vw, 64px)" }}>
-            Скачай и попробуй <span style={{ color: "var(--neon-green)" }}>прямо сейчас</span>
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <div className="pulse-dot mx-auto mb-8" />
+          <h2 className="font-rajdhani font-bold text-white mb-4" style={{ fontSize: "clamp(32px, 5vw, 56px)" }}>
+            Попробуй прямо <span style={{ color: "var(--neon-green)" }}>сейчас</span>
           </h2>
           <p className="text-slate-400 mb-10 text-lg max-w-xl mx-auto">
-            Бесплатно. Без регистрации. Без рекламы. Один APK — все функции.
+            Открой приложение, добавь на экран — и кликер уже в кармане
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="neon-btn-green px-10 py-4 rounded-xl font-rajdhani font-bold text-xl tracking-widest flex items-center gap-3 animate-border-pulse">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/app"
+              className="neon-btn-green px-10 py-4 rounded-xl font-rajdhani font-bold text-xl tracking-widest flex items-center justify-center gap-3 animate-border-pulse">
+              <Icon name="Smartphone" size={22} />
+              ОТКРЫТЬ ПРИЛОЖЕНИЕ
+            </a>
+            <button onClick={handleInstall}
+              className="neon-btn-cyan px-10 py-4 rounded-xl font-rajdhani font-bold text-xl tracking-widest flex items-center justify-center gap-3">
               <Icon name="Download" size={22} />
-              СКАЧАТЬ APK — БЕСПЛАТНО
-            </button>
-            <button
-              className="px-8 py-4 rounded-xl font-rajdhani font-semibold text-base text-slate-400 hover:text-white transition-colors flex items-center gap-2 border"
-              style={{ borderColor: "var(--dark-border)" }}
-              onClick={() => scrollTo("how")}
-            >
-              <Icon name="BookOpen" size={18} />
-              Инструкция по установке
+              {installed ? "УСТАНОВЛЕНО ✓" : "НА ЭКРАН"}
             </button>
           </div>
-          <div className="mt-8 flex justify-center gap-6 font-mono-ibm text-xs text-slate-600">
-            <span>✓ Android 8.0+</span>
-            <span>✓ Без root</span>
-            <span>✓ ~8.2 MB</span>
-            <span>✓ Без интернета</span>
+          <div className="mt-6 flex justify-center gap-5 font-mono-ibm text-xs text-slate-600 flex-wrap">
+            <span>✓ Android + iOS</span>
+            <span>✓ Без регистрации</span>
+            <span>✓ Офлайн</span>
+            <span>✓ Данные на устройстве</span>
           </div>
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="py-8 border-t" style={{ borderColor: "var(--dark-border)" }}>
         <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <span className="font-rajdhani font-bold text-white tracking-wider">
             CLICK<span style={{ color: "var(--neon-green)" }}>FORGE</span>
-            <span className="font-mono-ibm text-xs text-slate-600 ml-2">v2.4 for Android</span>
+            <span className="font-mono-ibm text-xs text-slate-600 ml-2">v2.4 PWA</span>
           </span>
-          <div className="font-mono-ibm text-xs text-slate-600">
-            Только для личного использования · Android 8.0+
-          </div>
+          <div className="font-mono-ibm text-xs text-slate-600">Для личного использования · Android + iOS</div>
           <div className="flex gap-4 font-mono-ibm text-xs text-slate-500">
-            {NAV_ITEMS.map((item) => (
-              <button key={item.id} onClick={() => scrollTo(item.id)} className="hover:text-slate-300 transition-colors">
-                {item.label}
-              </button>
+            {NAV_ITEMS.map(item => (
+              <button key={item.id} onClick={() => scrollTo(item.id)} className="hover:text-slate-300 transition-colors">{item.label}</button>
             ))}
           </div>
         </div>
       </footer>
+
+      {/* Install modal */}
+      {showInstallModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
+          onClick={(e) => { if (e.target === e.currentTarget) setShowInstallModal(false); }}>
+          <div className="w-full max-w-md rounded-2xl p-6 relative"
+            style={{ background: "var(--dark-card)", border: "1px solid rgba(0,255,136,0.3)", boxShadow: "0 0 40px rgba(0,255,136,0.15)" }}>
+            <button onClick={() => setShowInstallModal(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center text-slate-400"
+              style={{ background: "rgba(255,255,255,0.05)" }}>✕</button>
+            <div className="text-3xl mb-2">📱</div>
+            <h3 className="font-rajdhani font-bold text-white text-xl mb-1">Установить на телефон</h3>
+            <p className="text-slate-400 text-sm mb-5">Инструкция для Chrome на Android:</p>
+            <div className="space-y-3 mb-5">
+              {[
+                { n: "1", t: "Открой приложение", d: "Нажми кнопку ниже или зайди по прямой ссылке" },
+                { n: "2", t: "Меню браузера", d: "Три точки (⋮) в правом верхнем углу Chrome" },
+                { n: "3", t: "Добавить на экран", d: "«Добавить на главный экран» или «Установить приложение»" },
+                { n: "4", t: "Подтверди", d: "Нажми «Установить» — иконка появится на рабочем столе" },
+              ].map(s => (
+                <div key={s.n} className="flex gap-3 items-start">
+                  <div className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center font-mono-ibm text-xs font-bold"
+                    style={{ background: "rgba(0,255,136,0.15)", color: "var(--neon-green)" }}>{s.n}</div>
+                  <div>
+                    <div className="font-rajdhani font-semibold text-white text-sm">{s.t}</div>
+                    <div className="font-mono-ibm text-xs text-slate-500">{s.d}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <a href="/app"
+              className="w-full py-3 rounded-xl font-rajdhani font-bold text-base tracking-wider flex items-center justify-center gap-2 neon-btn-green">
+              ОТКРЫТЬ ПРИЛОЖЕНИЕ →
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default Index;
+}
